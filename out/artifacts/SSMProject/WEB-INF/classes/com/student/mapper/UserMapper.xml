@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespace:该mapper.xml映射文件的 唯一标识 -->
+<mapper namespace="com.student.mapper.UserMapper">
+	<!-- 查询所有用户总数 -->
+	<select id="getTotalCount" 	resultType="int"  >
+		select count(1) from u_relate_r
+		<where>
+		<if test="u_id!=null and u_id!=''">
+			stuNo like concat('%',#{u_id},'%')
+		</if>
+		</where>
+	</select>
+	<!-- 增加用户 -->
+	<insert id="addUser" parameterType="com.student.entity.User" >
+		insert into user(id,userName,userPassword) values(#{id},#{userName},#{userPassword});
+		insert into u_relate_r(u_id) VALUES (#{id});
+	</insert>
+	<!-- 曾加管理员 -->
+	<insert id="addAdminr" parameterType="com.student.entity.User" >
+		insert into user(id,userName,userPassword) values(#{id},#{userName},#{userPassword})
+		insert into u_relate_r(u_id,r_id) VALUES (#{id},1);
+	</insert>
+	<!-- 修改用户权限(修改用户角色) -->
+	<update id="uploadUserPrivate" parameterType="java.util.Map">
+		<!-- UPDATE u_relate_r ur, user u set ur.r_id=#{r_id} WHERE ur.u_id=u.id and u.id=#{id}; -->
+		UPDATE u_relate_r ur, user u set ur.r_id=#{r_id} WHERE ur.u_id=u.id and u.id=#{id};
+	</update>
+	<!-- 查看用户角色 -->
+	<select id="queryUserRole" parameterType="com.student.entity.User" resultType="int">
+		SELECT ur.r_id FROM u_relate_r ur  where ur.u_id=#{id};
+	</select>
+	<!-- 删除用户 -->
+	<delete id="deleteUserById" parameterType="com.student.entity.User" >
+		DELETE from  u_relate_r ur WHERE ur.u_id='${value}';
+		DELETE from  user u  WHERE   u.id='${value}'
+	</delete>
+	<!-- 登陆验证 -->
+	<select id="queryUserByUser"  parameterType="com.student.entity.User" resultType="com.student.entity.User" >
+				select * from user where user.id =#{id} and user.userPassword =#{userPassword};
+	</select>
+	<!-- 管理员验证 -->
+	<select id="queryUserIsWho"  parameterType="com.student.entity.User" resultType="com.student.entity.User" >
+				Select u.id,u.userName,r.r_name,p.p_name,p.p_id from user u ,role r ,u_relate_r ur, permission p ,r_relate_p rp Where u.id = ur.u_id and ur.r_id = rp.r_id and rp.p_id=p.p_id and rp.r_id=r.r_id  and u.id= #{id}
+	</select>
+	<!-- 注册验证 -->
+	<select id="queryUserById"  parameterType="int" resultType="com.student.entity.User" >
+				Select u.id,u.userName,r.r_name,p.p_name,p.p_id from user u ,role r ,u_relate_r ur, permission p ,r_relate_p rp Where u.id = ur.u_id and ur.r_id = rp.r_id and rp.p_id=p.p_id and rp.r_id=r.r_id  and u.id=#{id};
+	</select>
+	<!-- 查询用户总数调用存储过程  
+		存储过程的的输入参数，在mybatis用Map来传递 （HashMap）
+	-->
+	<!-- <select id="getTotalCountWithProcedure"   statementType="STATEMENT" parameterMap="java.util.Map">
+		{
+			CALL getTotalCountWithProcedure(
+				#{myId.jdbcType=INTEGER,mode=IN}
+				#{TotalCount.jdbcType=INTEGER,mode=OUT}
+			)
+		}
+		select count(1) from user
+	</select> -->
+	<!-- 存储过程的增加用户 -->
+	<insert id="addUser1" parameterType="com.student.entity.User" statementType="CALLABLE">
+		{
+			call insert_user(
+				#{id,mode=OUT,jdbcType=INTEGER},
+				#{userName,mode=IN},
+				#{userPassword,mode=IN},
+			)
+		}
+	</insert>
+	<!-- 存储过程的删除用户 -->
+	<delete id="deleteUserByIdWithProcedure" parameterType="Integer" statementType="CALLABLE">
+		{call deleteUser1(#{id,mode=IN})}
+	</delete>
+	<!-- 查询用户分页 -->
+<!-- 	<select id="queryUserByPage"  parameterType="com.student.entity.Page" resultType="com.student.entity.User" >
+	Select u.id,u.userName,r.r_name,p.p_name,p.p_id from user u ,role r ,u_relate_r ur, permission p ,r_relate_p rp Where u.id = ur.u_id and ur.r_id = rp.r_id and rp.p_id=p.p_id and rp.r_id=r.r_id 
+	<if test="currentPage != null">
+    <if test="pageSize != null">
+      limit ${currentPage}, ${pageSize}
+    </if>
+    <if test="pageSize == null">
+      limit ${pageSize}
+    </if>
+  </if>
+	</select> -->
+	<!-- 查看用户角色权限 -->
+	<select id="queryUserByPage"  parameterType="com.student.entity.Page" resultType="com.student.entity.User" >
+		Select u.id,u.userName,r.r_name from user u ,role r ,u_relate_r ur 
+	<where>
+		u.id=ur.u_id AND ur.r_id=r.r_id
+	</where>
+	<if test="currentPage != null">
+    <if test="pageSize != null">
+      limit ${currentPage}, ${pageSize}
+    </if>
+    <if test="pageSize == null">
+      limit ${pageSize}
+    </if>
+  </if>
+	</select>
+	<!-- 根据角色查询角色状态 -->
+	<select id="queryRoleStastus"  parameterType="com.student.entity.Role" resultType="com.student.entity.Role">
+		Select r.r_id,r.r_name,r.r_status from role r where r.r_id=#{r_id};
+	</select>
+	<select id="queryRole" resultType="com.student.entity.Role">
+		Select r.r_id,r.r_name,r.r_status from role r ;
+	</select>
+	<!-- 根据id菜单查询 -->
+	<select id="queryMenuById"  parameterType="java.lang.Integer" resultType="com.student.entity.Permission">
+		Select  p.p_title from  permission p ,r_relate_p rp ,u_relate_r ur,user u,role r  Where u.id = ur.u_id and ur.r_id = r.r_id and r.r_id=rp.r_id and rp.p_id=p.p_id and  p.parent_id=1 and u.id=${id};
+	</select>
+	<!-- 用户id查询权限资源 -->
+	<select id="findResourceById" parameterType="java.lang.Integer" resultType="com.student.entity.Permission">
+	Select u.id,r.r_name,p.p_title,p.p_id,p.parent_id,p.p_url from user u ,role r ,u_relate_r ur, permission p ,r_relate_p rp Where u.id = ur.u_id and ur.r_id = rp.r_id and rp.p_id=p.p_id and rp.r_id=r.r_id  and u.id=${id}
+	</select>
+</mapper>

@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd">
+    <!-- 依赖注入：给service注入dao -->
+    <bean id="studentService" class="com.student.service.impl.StudentServiceImpl">
+		<property name="studentMapper" ref="studentMapper"/>
+    </bean>
+    <bean id="userService" class="com.student.service.impl.UserServiceImpl">
+		<property name="userMapper" ref="userMapper"/>
+    </bean>
+    <bean id="permissionService" class="com.student.service.impl.PermissionServiceImpl">
+		<property name="permissionMapper" ref="permissionMapper"/>
+    </bean>
+
+    <!-- 加载db.properties文件 -->
+    <bean id="config" class="org.springframework.beans.factory.config.PreferencesPlaceholderConfigurer">
+        <property name="locations">
+            <array>
+                <value>classpath:db.properties</value>
+            </array>
+        </property>
+
+    </bean>
+
+    <!-- 配置配置数据库信息（替代mybatis的配置文件conf.xml） -->
+    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource">
+		<property name="driverClassName" value="${driver}"/>
+		<property name="url" value="${url}"/>
+		<property name="username" value="${username}"/>
+		<property name="password" value="${password}"/>
+    </bean>
+    <!-- 开启事务控制的注解支持 -->
+    <tx:annotation-driven transaction-manager="transactionManager"/>
+    <!-- 1：配置事务管理器 -->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"></property>
+    </bean>
+    <tx:advice id="transactionAdvice" transaction-manager="transactionManager">
+        <tx:attributes>
+            <tx:method name="*" propagation="REQUIRED" isolation="DEFAULT" rollback-for="java.lang.Exception"/>
+            <tx:method name="query*" read-only="true"/>
+        </tx:attributes>
+    </tx:advice>
+    <aop:config>
+        <aop:advisor advice-ref="transactionAdvice" pointcut="execution(* com.student..*Service.*(..))"/>
+    </aop:config>
+
+<!-- conf.xml :  数据源,mapper.xml -->
+    <!-- 配置MyBatis需要的核心类：SqlSessionFactory -->
+    <!-- 在SpringIoc容器中 创建MyBatis的核心类 SqlSesionFactory -->
+ <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource"/>
+        <!-- 加载mapper.xml路径 -->
+		<property name="mapperLocations" value="classpath:com/student/mapper/*.xml"/>
+        <property name="plugins">
+            <array>
+                <bean class="com.github.pagehelper.PageInterceptor">
+                    <property name="properties">
+                        <value>
+                            helperDialect=mysql
+                            reasonable=true
+                        </value>
+                    </property>
+                </bean>
+            </array>
+        </property>
+    </bean>
+
+<!--    <bean id="sqlSessionFactory" class="com.baomidou.mybatisplus.spring.MybatisSqlSessionFactoryBean">-->
+<!--        <property name="dataSource" ref="dataSource"/>-->
+<!--        &lt;!&ndash; 配置实体扫描路径，多个package可以用分号; 逗号, 分隔， 支持通配符*&ndash;&gt;-->
+<!--        &lt;!&ndash; com.a.b.entity;com.a.c.entity;com.d.*.entity&ndash;&gt;-->
+<!--        <property name="typeAliasesPackage" value="cn.xm.jwxt.bean.*"/>-->
+<!--        <property name="configuration" ref="mybatisConfig"/>-->
+<!--        &lt;!&ndash; MP 全局配置注入 &ndash;&gt;-->
+<!--        <property name="globalConfig" ref="globalConfig"/>-->
+<!--        <property name="plugins">-->
+<!--            <array>-->
+<!--                &lt;!&ndash; 分页插件配置 &ndash;&gt;-->
+<!--                <bean id="paginationInterceptor"-->
+<!--                      class="com.baomidou.mybatisplus.plugins.PaginationInterceptor"/>-->
+<!--                &lt;!&ndash; 性能拦截器，兼打印sql，不建议生产环境配置&ndash;&gt;-->
+<!--                <bean id="performanceInterceptor"-->
+<!--                      class="com.baomidou.mybatisplus.plugins.PerformanceInterceptor"/>-->
+<!--            </array>-->
+<!--        </property>-->
+<!--    </bean>-->
+
+<!--    <bean id="mybatisConfig" class="com.baomidou.mybatisplus.MybatisConfiguration">-->
+<!--        <property name="mapUnderscoreToCamelCase" value="true"/>-->
+<!--    </bean>-->
+
+<!--    &lt;!&ndash; 定义 MP 全局策略 &ndash;&gt;-->
+<!--    <bean id="globalConfig" class="com.baomidou.mybatisplus.entity.GlobalConfiguration">-->
+<!--        &lt;!&ndash; 主键策略配置 &ndash;&gt;-->
+<!--        &lt;!&ndash; 可选参数-->
+<!--            AUTO->`0`("数据库ID自增")-->
+<!--            INPUT->`1`(用户输入ID")-->
+<!--            ID_WORKER->`2`("全局唯一ID")-->
+<!--            UUID->`3`("全局唯一ID")-->
+<!--        &ndash;&gt;-->
+<!--        <property name="idType" value="2"/>-->
+
+<!--        &lt;!&ndash; 数据库类型配置 &ndash;&gt;-->
+<!--        &lt;!&ndash; 可选参数（默认mysql）-->
+<!--            MYSQL->`mysql`-->
+<!--            ORACLE->`oracle`-->
+<!--            DB2->`db2`-->
+<!--            H2->`h2`-->
+<!--            HSQL->`hsql`-->
+<!--            SQLITE->`sqlite`-->
+<!--            POSTGRE->`postgresql`-->
+<!--            SQLSERVER2005->`sqlserver2005`-->
+<!--            SQLSERVER->`sqlserver`-->
+<!--        &ndash;&gt;-->
+<!--        <property name="dbType" value="mysql"/>-->
+
+<!--        &lt;!&ndash; 全局表为下划线命名设置 true &ndash;&gt;-->
+<!--        <property name="dbColumnUnderline" value="true"/>-->
+<!--    </bean>-->
+    <!-- 将MyBatis的SqlSessionFactory 交给Spring -->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
+		<property name="basePackage" value="com.student.mapper"/>
+    </bean>
+
+</beans>

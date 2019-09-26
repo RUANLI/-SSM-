@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespace:该mapper.xml映射文件的 唯一标识 -->
+<mapper namespace="com.student.mapper.StudentMapper">
+	<!-- 查询所有学生总数 -->
+	<select id="getTotalCount" 	resultType="int"  >
+		select count(1) from student
+		<where>
+		<if test="stuNo!=null and stuNo!=''">
+			stuNo like concat('%',#{stuNo},'%')
+		</if>
+		</where>
+	</select>
+	<!--学号查询 -->
+	<select id="queryStudentByNo" 	parameterType="int"  resultType="com.student.entity.Student"  >
+		select student.stuNo,student.stuName,student.stuClass,exam.stuChinese,exam.stuMath,exam.stuEnglish from student,exam  where student.stuNo=exam.stuNo and student.stuNo=#{stuNo}
+	</select>
+	<!-- 存储过程的添加用户 -->
+	<insert id="addStudentWithProcedure" parameterType="com.student.entity.Student" statementType="CALLABLE">
+		{
+			call addStudentWithProcedure(
+				#{stuNo,mode=IN,jdbcType=INTEGER},
+				#{stuName,mode=IN},
+				#{stuClass,mode=IN},
+				#{stuChinese,mode=IN},
+				#{stuMath,mode=IN},
+				#{stuEnglish,mode=IN}
+			)
+		}
+	</insert>
+	<!-- 增加学生 -->
+	<insert id="addStudent" parameterType="com.student.entity.Student" >
+		insert into student(stuNo,stuName,stuClass)  values(#{stuNo},#{stuName},#{stuClass});
+		insert into exam(stuNo,stuChinese,stuMath,stuEnglish)  values(#{stuNo},#{stuChinese},#{stuMath},#{stuEnglish});
+	</insert>
+	<!-- 存储过程的删除学生 -->
+	<delete id="deleteStudentWithPaocedure" parameterType="Integer" statementType="CALLABLE">
+		{call deleteStudentWithPaocedure(#{stuNo,mode=IN})}
+	</delete>
+	<!-- 普通删除学生 -->
+	<delete id="deleteStudentByNo" parameterType="com.student.entity.Student" >
+		DELETE student,exam from student inner join exam on student.stuNo=exam.stuNo WHERE student.stuNo=#{stuNo}
+	</delete>
+	<!-- 批量删除学生 -->
+	<delete id="" parameterType="int">
+		delete from student stu where stu.stuNo  in
+      <foreach collection="array" item = "stuNo" open="(" separator="," close=")">
+   	   		#{stuNo}
+    </foreach>  
+	</delete>
+	<!-- 修改学生信息 -->
+	<update id="uploadStudentByNo"  parameterType="com.student.entity.Student">
+		update student,exam  set student.stuName=#{stuName},student.stuClass=#{stuClass},exam.stuChinese=#{stuChinese},exam.stuMath=#{stuMath},exam.stuEnglish=#{stuEnglish} where student.stuNo=exam.stuNo and student.stuNo=#{stuNo}
+	</update>
+	<!-- 分页查询学生 -->
+	<select id="queryStudentByPage"  parameterType="java.util.Map" resultType="com.student.entity.Student" >
+	<!-- select *from student order by id -->
+		select student.stuNo,student.stuName,student.stuClass,exam.stuChinese,exam.stuMath,exam.stuEnglish 
+		from student RIGHT OUTER JOIN  exam on student.stuNo=exam.stuNo 
+		<where>
+		<if test="student.stuNo!=null and student.stuNo!=''">
+			student.stuNo like concat('%',#{student.stuNo},'%')
+		</if>
+		<if test="student.stuName!=null and student.stuName!=''">
+			student.stuName like concat('%',#{student.stuName},'%')
+		</if>
+		</where>
+		<if test="page.currentPage != null">
+	    <if test="page.pageSize != null">
+	      limit ${page.currentPage}, ${page.pageSize}
+	    </if>
+	    <if test="page.pageSize == null">
+	      limit ${page.pageSize}
+	    </if>
+  </if>
+	</select>
+</mapper>

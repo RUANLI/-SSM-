@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespace:该mapper.xml映射文件的 唯一标识 -->
+<mapper namespace="com.student.mapper.PermissionMapper">
+	<select id="queryPermissionById" parameterType="int" resultType="com.student.entity.Permission">
+	Select p.p_title,p.p_id,p.parent_id,p.p_url from role r , permission p ,r_relate_p rp Where  rp.p_id=p.p_id and rp.r_id=r.r_id  and r.r_id= ${r_id}	
+	</select>
+	<!-- 根据用户id修改权限 -->
+	<insert id="UploadpermissionByR_id">
+		insert into  r_relate_p(r_id,p_id) values
+		<foreach collection="pids" item = "pid"  separator=",">
+   	   		(#{r_id},#{pid})
+    	</foreach> 
+	</insert>
+	<!-- <update id="UploadpermissionByR_id">
+	 	insert into r_relate_p(r_id,p_id) values(1,6)
+		<foreach collection="pids" item = "pid" open="(" separator="," close=")">
+   	   		#{pid}
+    	</foreach> 
+    	where role.r_id=rp.r_id and rp.r_id=#{r_id} 
+	</update> -->
+	<!-- <update id="UploadpermissionByR_id" parameterType="int">
+			update r_relate_p rp  set #{p_id} where role.r_id=rp.r_id and rp.r_id=#{r_id} 
+	</update> -->
+	<!-- 根据用户id删除所有权限 -->
+	<delete id="deletepermissionByR_id" parameterType="int">
+	<!-- delete from r_relate_p rp where rp.p_id not in(1,2,3,4,5)  and rp.r_id=${r_id} -->
+	delete from r_relate_p rp where rp.r_id=${r_id}
+	</delete>
+	<!-- 角色增加 -->
+	<insert id="addRole"  parameterType="com.student.entity.Role">
+		insert into role(r_id,r_name) values(#{r_id},#{r_name});
+	</insert>
+	<!-- 角色禁用 -->
+	<update id="StoppermissionById" parameterType="com.student.entity.Role">
+		UPDATE role r  set  r.r_status=#{r_status} WHERE r.r_id=#{r_id};
+	</update>
+	<!-- 新增权限树节点 -->
+	<insert id="AddperissionTree" parameterType="com.student.entity.Permission">
+	insert into permission(p_id,p_url,p_title,parent_id) values(#{p_id},#{p_url},#{p_title},#{parent_id});
+	</insert>
+	<!-- 删除权限树节点 -->
+	<delete id="delpermissTree" parameterType="com.student.entity.Permission">
+<!-- 	set foreign_key_checks = 0;
+	DELETE rp,p from r_relate_p rp,permission p WHERE rp.p_id=p.p_id AND p.p_id=#{p_id};
+	set foreign_key_checks =1; -->
+	DELETE  from r_relate_p rp  WHERE rp.p_id=#{p_id};
+	DELETE  from permission p  WHERE p.p_id=#{p_id};
+	</delete>
+	
+</mapper>
