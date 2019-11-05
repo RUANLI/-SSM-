@@ -1,0 +1,463 @@
+/*
+Navicat MySQL Data Transfer
+
+Source Server         : localhost_3306
+Source Server Version : 80017
+Source Host           : localhost:3306
+Source Database       : test
+
+Target Server Type    : MYSQL
+Target Server Version : 80017
+File Encoding         : 65001
+
+Date: 2019-11-05 09:42:25
+*/
+
+SET FOREIGN_KEY_CHECKS=0;
+
+-- ----------------------------
+-- Table structure for exam
+-- ----------------------------
+DROP TABLE IF EXISTS `exam`;
+CREATE TABLE `exam` (
+  `stuNo` int(20) NOT NULL AUTO_INCREMENT,
+  `stuChinese` int(3) DEFAULT NULL,
+  `stuMath` int(3) DEFAULT NULL,
+  `stuEnglish` int(3) DEFAULT NULL,
+  PRIMARY KEY (`stuNo`)
+) ENGINE=InnoDB AUTO_INCREMENT=1111113 DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Records of exam
+-- ----------------------------
+INSERT INTO `exam` VALUES ('1', '88', '88', '99');
+INSERT INTO `exam` VALUES ('2', '88', '88', '99');
+INSERT INTO `exam` VALUES ('3', '88', '88', '88');
+INSERT INTO `exam` VALUES ('4', '88', '99', '99');
+INSERT INTO `exam` VALUES ('5', '111', '111', '111');
+INSERT INTO `exam` VALUES ('7', '67', '76', '98');
+INSERT INTO `exam` VALUES ('11', '11', '11', '111');
+INSERT INTO `exam` VALUES ('13', '98', '90', '76');
+INSERT INTO `exam` VALUES ('14', '88', '90', '77');
+INSERT INTO `exam` VALUES ('15', '66', '90', '56');
+INSERT INTO `exam` VALUES ('18', '111', '23', '77');
+INSERT INTO `exam` VALUES ('19', '66', '90', '56');
+INSERT INTO `exam` VALUES ('20', '66', '68', '99');
+INSERT INTO `exam` VALUES ('21', '26', '90', '56');
+INSERT INTO `exam` VALUES ('22', '26', '90', '56');
+INSERT INTO `exam` VALUES ('23', '66', '68', '99');
+INSERT INTO `exam` VALUES ('24', '111', '111', '111');
+INSERT INTO `exam` VALUES ('25', '111', '22', '124');
+INSERT INTO `exam` VALUES ('26', '88', '88', '99');
+INSERT INTO `exam` VALUES ('27', '99', '99', '99');
+INSERT INTO `exam` VALUES ('28', '77', '77', '77');
+INSERT INTO `exam` VALUES ('29', '66', '66', '66');
+INSERT INTO `exam` VALUES ('44', '99', '99', '99');
+INSERT INTO `exam` VALUES ('77', '11', '11', '11');
+INSERT INTO `exam` VALUES ('99', '90', '122', '12');
+INSERT INTO `exam` VALUES ('111', '111', '111', '111');
+INSERT INTO `exam` VALUES ('777', '11', '11', '11');
+INSERT INTO `exam` VALUES ('8888', '339', '339', '339');
+
+-- ----------------------------
+-- Table structure for g_relate_r
+-- ----------------------------
+DROP TABLE IF EXISTS `g_relate_r`;
+CREATE TABLE `g_relate_r` (
+  `g_id` int(30) NOT NULL,
+  `r_id` int(30) NOT NULL,
+  `desc` varchar(255) DEFAULT NULL,
+  KEY `FK_GR_REF_GROUP` (`g_id`),
+  KEY `FK_GR_REF_ROLE` (`r_id`),
+  CONSTRAINT `FK_GR_REF_GROUP` FOREIGN KEY (`g_id`) REFERENCES `usergroup` (`g_id`),
+  CONSTRAINT `FK_GR_REF_ROLE` FOREIGN KEY (`r_id`) REFERENCES `role` (`r_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Records of g_relate_r
+-- ----------------------------
+INSERT INTO `g_relate_r` VALUES ('1', '1', '用户组对应的角色');
+INSERT INTO `g_relate_r` VALUES ('2', '2', null);
+INSERT INTO `g_relate_r` VALUES ('3', '3', null);
+
+-- ----------------------------
+-- Table structure for menu
+-- ----------------------------
+DROP TABLE IF EXISTS `menu`;
+CREATE TABLE `menu` (
+  `m_id` int(11) NOT NULL,
+  `m_name` varchar(255) DEFAULT NULL,
+  `m_url` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`m_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='菜单表\r\n';
+
+-- ----------------------------
+-- Records of menu
+-- ----------------------------
+INSERT INTO `menu` VALUES ('1', '学生列表', 'stuTab()');
+INSERT INTO `menu` VALUES ('2', '用户列表', 'userTab()');
+INSERT INTO `menu` VALUES ('3', '角色列表', 'roleTab()');
+
+-- ----------------------------
+-- Table structure for operation
+-- ----------------------------
+DROP TABLE IF EXISTS `operation`;
+CREATE TABLE `operation` (
+  `o_id` int(12) NOT NULL,
+  `o_name` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `o_url` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  PRIMARY KEY (`o_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='操作表';
+
+-- ----------------------------
+-- Records of operation
+-- ----------------------------
+INSERT INTO `operation` VALUES ('1', '学生增加按钮', '');
+INSERT INTO `operation` VALUES ('2', '学生删除按钮', null);
+INSERT INTO `operation` VALUES ('3', '学生修改按钮', null);
+INSERT INTO `operation` VALUES ('4', '学生搜索按钮', null);
+
+-- ----------------------------
+-- Table structure for permission
+-- ----------------------------
+DROP TABLE IF EXISTS `permission`;
+CREATE TABLE `permission` (
+  `p_id` int(12) NOT NULL,
+  `p_url` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `p_title` varchar(255) NOT NULL,
+  `parent_id` int(12) DEFAULT NULL,
+  PRIMARY KEY (`p_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='权限表';
+
+-- ----------------------------
+-- Records of permission
+-- ----------------------------
+INSERT INTO `permission` VALUES ('1', 'root()', '系统管理', '0');
+INSERT INTO `permission` VALUES ('2', 'stu', '学生管理', '1');
+INSERT INTO `permission` VALUES ('3', 'user', '用户管理', '1');
+INSERT INTO `permission` VALUES ('4', 'role', '角色管理', '1');
+INSERT INTO `permission` VALUES ('5', 'permiss', '权限管理', '1');
+INSERT INTO `permission` VALUES ('6', 'stuTab()', '学生列表', '2');
+INSERT INTO `permission` VALUES ('7', 'stuAdd()', '增加学生', '2');
+INSERT INTO `permission` VALUES ('8', 'deleteSelectedStudent()', '删除学生', '2');
+INSERT INTO `permission` VALUES ('9', 'getSelectedRow()', '修改学生', '2');
+INSERT INTO `permission` VALUES ('10', 'userTab()', '用户列表', '3');
+INSERT INTO `permission` VALUES ('11', 'addUser()', '用户增加', '3');
+INSERT INTO `permission` VALUES ('12', 'deleteSelectedUser()', '用户删除', '3');
+INSERT INTO `permission` VALUES ('13', 'editUser()', '用户修改', '3');
+INSERT INTO `permission` VALUES ('14', 'editRole()', '权限修改', '4');
+INSERT INTO `permission` VALUES ('15', 'getChecked()', '权限列表', '5');
+INSERT INTO `permission` VALUES ('16', 'roleTab()', '角色列表', '4');
+INSERT INTO `permission` VALUES ('17', 'addRole()', '增加角色', '4');
+INSERT INTO `permission` VALUES ('18', 'stopRole()', '角色状态', '4');
+
+-- ----------------------------
+-- Table structure for p_relate_m
+-- ----------------------------
+DROP TABLE IF EXISTS `p_relate_m`;
+CREATE TABLE `p_relate_m` (
+  `p_id` int(12) DEFAULT NULL,
+  `m_id` int(12) DEFAULT NULL,
+  KEY `p_id` (`p_id`),
+  KEY `m_id` (`m_id`),
+  CONSTRAINT `p_relate_m_ibfk_1` FOREIGN KEY (`p_id`) REFERENCES `permission` (`p_id`),
+  CONSTRAINT `p_relate_m_ibfk_2` FOREIGN KEY (`m_id`) REFERENCES `menu` (`m_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Records of p_relate_m
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for p_relate_o
+-- ----------------------------
+DROP TABLE IF EXISTS `p_relate_o`;
+CREATE TABLE `p_relate_o` (
+  `p_id` int(12) DEFAULT NULL,
+  `o_id` int(12) DEFAULT NULL,
+  KEY `p_id` (`p_id`),
+  KEY `o_id` (`o_id`),
+  CONSTRAINT `p_relate_o_ibfk_1` FOREIGN KEY (`p_id`) REFERENCES `permission` (`p_id`),
+  CONSTRAINT `p_relate_o_ibfk_2` FOREIGN KEY (`o_id`) REFERENCES `operation` (`o_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Records of p_relate_o
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for role
+-- ----------------------------
+DROP TABLE IF EXISTS `role`;
+CREATE TABLE `role` (
+  `r_id` int(30) NOT NULL,
+  `r_name` varchar(30) DEFAULT NULL,
+  `r_status` int(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`r_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Records of role
+-- ----------------------------
+INSERT INTO `role` VALUES ('1', '用户', '0');
+INSERT INTO `role` VALUES ('2', '管理员', '0');
+INSERT INTO `role` VALUES ('3', '系统管理员', '0');
+INSERT INTO `role` VALUES ('4', '老师', '1');
+
+-- ----------------------------
+-- Table structure for r_relate_p
+-- ----------------------------
+DROP TABLE IF EXISTS `r_relate_p`;
+CREATE TABLE `r_relate_p` (
+  `r_id` int(30) NOT NULL,
+  `p_id` int(30) NOT NULL,
+  UNIQUE KEY `r_id` (`r_id`,`p_id`),
+  KEY `FK_RP_REF_PRIVTLEGE` (`p_id`),
+  CONSTRAINT `FK_RP_REF_PRIVTLEGE` FOREIGN KEY (`p_id`) REFERENCES `permission` (`p_id`),
+  CONSTRAINT `FK_RP_REF_ROLE` FOREIGN KEY (`r_id`) REFERENCES `role` (`r_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Records of r_relate_p
+-- ----------------------------
+INSERT INTO `r_relate_p` VALUES ('3', '1');
+INSERT INTO `r_relate_p` VALUES ('3', '2');
+INSERT INTO `r_relate_p` VALUES ('3', '3');
+INSERT INTO `r_relate_p` VALUES ('3', '4');
+INSERT INTO `r_relate_p` VALUES ('3', '5');
+INSERT INTO `r_relate_p` VALUES ('3', '6');
+INSERT INTO `r_relate_p` VALUES ('3', '7');
+INSERT INTO `r_relate_p` VALUES ('3', '8');
+INSERT INTO `r_relate_p` VALUES ('3', '9');
+INSERT INTO `r_relate_p` VALUES ('3', '10');
+INSERT INTO `r_relate_p` VALUES ('3', '11');
+INSERT INTO `r_relate_p` VALUES ('3', '12');
+INSERT INTO `r_relate_p` VALUES ('3', '13');
+INSERT INTO `r_relate_p` VALUES ('3', '14');
+INSERT INTO `r_relate_p` VALUES ('3', '15');
+INSERT INTO `r_relate_p` VALUES ('3', '16');
+INSERT INTO `r_relate_p` VALUES ('3', '17');
+INSERT INTO `r_relate_p` VALUES ('3', '18');
+
+-- ----------------------------
+-- Table structure for student
+-- ----------------------------
+DROP TABLE IF EXISTS `student`;
+CREATE TABLE `student` (
+  `id` int(3) NOT NULL AUTO_INCREMENT,
+  `stuNo` int(20) NOT NULL,
+  `stuName` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `stuClass` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `stuNo` (`stuNo`)
+) ENGINE=InnoDB AUTO_INCREMENT=61 DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Records of student
+-- ----------------------------
+INSERT INTO `student` VALUES ('1', '7', '木吒', '超级班');
+INSERT INTO `student` VALUES ('6', '21', '一一', '一班');
+INSERT INTO `student` VALUES ('7', '22', '老汪', '五班');
+INSERT INTO `student` VALUES ('8', '24', '老李', '五班');
+INSERT INTO `student` VALUES ('9', '25', '老周', '五班');
+INSERT INTO `student` VALUES ('10', '14', '李云龙', '独立团');
+INSERT INTO `student` VALUES ('11', '15', '宋江', '一班');
+INSERT INTO `student` VALUES ('14', '18', '林冲', '一班');
+INSERT INTO `student` VALUES ('15', '19', '阮小二', '一班');
+INSERT INTO `student` VALUES ('16', '29', '孙悟空', '西游班');
+INSERT INTO `student` VALUES ('17', '28', '猪八戒', '西游班');
+INSERT INTO `student` VALUES ('18', '20', '猪八戒', '西游班');
+INSERT INTO `student` VALUES ('19', '26', '鸣人', '火影班');
+INSERT INTO `student` VALUES ('20', '27', '白骨精', '西游班');
+INSERT INTO `student` VALUES ('22', '23', '张三', '路人班');
+INSERT INTO `student` VALUES ('31', '13', '小白龙', '西游班');
+INSERT INTO `student` VALUES ('36', '99', '无极', '九班');
+INSERT INTO `student` VALUES ('37', '111', '詹姆斯', 'nba');
+INSERT INTO `student` VALUES ('38', '1', '哪吒', '超级班');
+INSERT INTO `student` VALUES ('39', '2', '二郎神', '超级班');
+INSERT INTO `student` VALUES ('40', '3', '李云龙', '独立团');
+INSERT INTO `student` VALUES ('41', '4', '老王', '77');
+INSERT INTO `student` VALUES ('42', '44', '老张', '五班');
+INSERT INTO `student` VALUES ('43', '11', '老大', '111');
+INSERT INTO `student` VALUES ('57', '5', '老马', '一班');
+INSERT INTO `student` VALUES ('60', '1', '小明', 'F');
+
+-- ----------------------------
+-- Table structure for tb_admin_menu
+-- ----------------------------
+DROP TABLE IF EXISTS `tb_admin_menu`;
+CREATE TABLE `tb_admin_menu` (
+  `menu_id` varchar(50) NOT NULL,
+  `menu_name` varchar(100) NOT NULL,
+  `menu_type` varchar(2) NOT NULL,
+  `parent_id` varchar(50) DEFAULT NULL,
+  `status` int(1) NOT NULL DEFAULT '1',
+  `url` varchar(255) DEFAULT NULL,
+  `count_num` int(11) NOT NULL,
+  `create_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `modify_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`menu_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Records of tb_admin_menu
+-- ----------------------------
+INSERT INTO `tb_admin_menu` VALUES ('M1', '用户模块', 'M', null, '1', null, '1', '2018-05-04 14:01:01', '2018-05-04 14:02:17');
+INSERT INTO `tb_admin_menu` VALUES ('M1010', '用户管理', 'M', 'M1', '1', null, '11', '2018-05-04 14:01:48', '2018-05-04 14:03:39');
+INSERT INTO `tb_admin_menu` VALUES ('M1011', '权限管理', 'M', 'M1', '1', null, '111', '2018-05-04 14:03:32', '2018-05-04 14:03:45');
+INSERT INTO `tb_admin_menu` VALUES ('M1012', '角色管理', 'M', 'M1', '1', null, '112', '2018-05-05 09:47:36', '2018-05-05 09:47:36');
+INSERT INTO `tb_admin_menu` VALUES ('O101001', '新建用户', 'O', 'M1010', '1', null, '1101', '2018-05-04 14:04:35', '2018-05-05 09:51:24');
+INSERT INTO `tb_admin_menu` VALUES ('O101002', '用户删除', 'O', 'M1010', '1', null, '1102', '2018-05-04 14:05:00', '2018-05-04 17:50:36');
+INSERT INTO `tb_admin_menu` VALUES ('O101003', '用户编辑', 'O', 'M1010', '1', null, '1103', '2018-05-04 14:05:25', '2018-05-04 17:50:38');
+INSERT INTO `tb_admin_menu` VALUES ('O101101', '权限分配', 'O', 'M1011', '1', null, '1111', '2018-05-05 09:57:29', '2018-05-05 09:57:29');
+INSERT INTO `tb_admin_menu` VALUES ('O101201', '新建角色', 'O', 'M1012', '1', null, '1121', '2018-05-05 09:49:03', '2018-05-05 09:49:03');
+INSERT INTO `tb_admin_menu` VALUES ('O101202', '删除角色', 'O', 'M1012', '1', null, '1122', '2018-05-05 09:49:38', '2018-05-05 09:49:38');
+INSERT INTO `tb_admin_menu` VALUES ('O101203', '角色编辑', 'O', 'M1012', '1', null, '1123', '2018-05-05 09:50:49', '2018-05-05 09:50:49');
+
+-- ----------------------------
+-- Table structure for user
+-- ----------------------------
+DROP TABLE IF EXISTS `user`;
+CREATE TABLE `user` (
+  `id` int(30) NOT NULL,
+  `userName` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `userPassword` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `locked` int(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  KEY `id` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Records of user
+-- ----------------------------
+INSERT INTO `user` VALUES ('1', '老王', '123456', '0');
+INSERT INTO `user` VALUES ('2', '小李', '123456', '0');
+INSERT INTO `user` VALUES ('3', '平平无奇古天乐', '123456', '0');
+INSERT INTO `user` VALUES ('4', '郑州周润发', '123456', '0');
+INSERT INTO `user` VALUES ('5', '河南诸葛亮', '123456', '0');
+INSERT INTO `user` VALUES ('6', '李云龙', '123456', '0');
+INSERT INTO `user` VALUES ('7', '和尚', '123456', '0');
+INSERT INTO `user` VALUES ('9', '1q', '123456', '0');
+INSERT INTO `user` VALUES ('11', 'ww', '1234567', '0');
+INSERT INTO `user` VALUES ('12', '老张', '123456', '0');
+INSERT INTO `user` VALUES ('13', '赵云', '123456', '0');
+INSERT INTO `user` VALUES ('22', '111', '123456', '0');
+INSERT INTO `user` VALUES ('23', '川普', '123456', '0');
+INSERT INTO `user` VALUES ('26', '121', '123456', '0');
+INSERT INTO `user` VALUES ('55', '我', '123456', '0');
+INSERT INTO `user` VALUES ('65', '111', '123456', '0');
+INSERT INTO `user` VALUES ('99', '11', '123456', '0');
+INSERT INTO `user` VALUES ('888', '刘醒', '123456', '0');
+INSERT INTO `user` VALUES ('999', '丘比特', '123456', '0');
+INSERT INTO `user` VALUES ('11111', '老李', '123456', '0');
+
+-- ----------------------------
+-- Table structure for usergroup
+-- ----------------------------
+DROP TABLE IF EXISTS `usergroup`;
+CREATE TABLE `usergroup` (
+  `g_id` int(30) NOT NULL,
+  `g_name` varchar(30) NOT NULL,
+  PRIMARY KEY (`g_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Records of usergroup
+-- ----------------------------
+INSERT INTO `usergroup` VALUES ('1', '普通组');
+INSERT INTO `usergroup` VALUES ('2', '管理组');
+INSERT INTO `usergroup` VALUES ('3', '系统组');
+
+-- ----------------------------
+-- Table structure for u_relate_g
+-- ----------------------------
+DROP TABLE IF EXISTS `u_relate_g`;
+CREATE TABLE `u_relate_g` (
+  `u_id` int(30) NOT NULL,
+  `g_id` int(30) NOT NULL DEFAULT '1',
+  KEY `FK_GU_REF_GROUP` (`g_id`),
+  KEY `FK_GR_REF_USER` (`u_id`),
+  CONSTRAINT `FK_GR_REF_USER` FOREIGN KEY (`u_id`) REFERENCES `user` (`id`),
+  CONSTRAINT `FK_GU_REF_GROUP` FOREIGN KEY (`g_id`) REFERENCES `usergroup` (`g_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Records of u_relate_g
+-- ----------------------------
+INSERT INTO `u_relate_g` VALUES ('1', '1');
+INSERT INTO `u_relate_g` VALUES ('2', '1');
+INSERT INTO `u_relate_g` VALUES ('3', '1');
+
+-- ----------------------------
+-- Table structure for u_relate_r
+-- ----------------------------
+DROP TABLE IF EXISTS `u_relate_r`;
+CREATE TABLE `u_relate_r` (
+  `u_id` int(30) NOT NULL,
+  `r_id` int(30) NOT NULL DEFAULT '1',
+  KEY `FK_UR_REF_USER` (`u_id`) USING BTREE,
+  KEY `FK_UR_REF_ROLE` (`r_id`) USING BTREE,
+  CONSTRAINT `FK_UR_REF_ROLE` FOREIGN KEY (`r_id`) REFERENCES `role` (`r_id`),
+  CONSTRAINT `FK_UR_REF_USER` FOREIGN KEY (`u_id`) REFERENCES `user` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Records of u_relate_r
+-- ----------------------------
+INSERT INTO `u_relate_r` VALUES ('1', '3');
+INSERT INTO `u_relate_r` VALUES ('2', '2');
+INSERT INTO `u_relate_r` VALUES ('3', '1');
+INSERT INTO `u_relate_r` VALUES ('4', '1');
+INSERT INTO `u_relate_r` VALUES ('5', '4');
+INSERT INTO `u_relate_r` VALUES ('6', '1');
+INSERT INTO `u_relate_r` VALUES ('7', '2');
+INSERT INTO `u_relate_r` VALUES ('11', '1');
+INSERT INTO `u_relate_r` VALUES ('9', '1');
+INSERT INTO `u_relate_r` VALUES ('22', '1');
+INSERT INTO `u_relate_r` VALUES ('23', '1');
+INSERT INTO `u_relate_r` VALUES ('11111', '1');
+INSERT INTO `u_relate_r` VALUES ('999', '1');
+INSERT INTO `u_relate_r` VALUES ('888', '1');
+INSERT INTO `u_relate_r` VALUES ('12', '1');
+INSERT INTO `u_relate_r` VALUES ('13', '1');
+INSERT INTO `u_relate_r` VALUES ('55', '1');
+INSERT INTO `u_relate_r` VALUES ('26', '1');
+INSERT INTO `u_relate_r` VALUES ('65', '1');
+INSERT INTO `u_relate_r` VALUES ('99', '1');
+
+-- ----------------------------
+-- Procedure structure for addStudentWithProcedure
+-- ----------------------------
+DROP PROCEDURE IF EXISTS `addStudentWithProcedure`;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `addStudentWithProcedure`(IN s_no INTEGER,IN s_name VARCHAR(20),IN s_class VARCHAR(20),IN s_chinese INTEGER,IN s_math INTEGER,IN s_english INTEGER)
+BEGIN
+	insert into student(stuNo,stuName,stuClass)  values(s_no,s_name,s_class);
+		insert into exam(stuNo,stuChinese,stuMath,stuEnglish)  values(s_no,s_chinese,s_math,s_english);
+END
+;;
+DELIMITER ;
+
+-- ----------------------------
+-- Procedure structure for deleteStudentWithPaocedure
+-- ----------------------------
+DROP PROCEDURE IF EXISTS `deleteStudentWithPaocedure`;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `deleteStudentWithPaocedure`(IN u_No INTEGER)
+BEGIN
+DELETE student,exam from student inner join exam on student.stuNo=exam.stuNo WHERE student.stuNo=u_No;
+END
+;;
+DELIMITER ;
+
+-- ----------------------------
+-- Procedure structure for deleteUser1
+-- ----------------------------
+DROP PROCEDURE IF EXISTS `deleteUser1`;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `deleteUser1`(IN u_id INTEGER)
+BEGIN
+DELETE fROM USER WHERE ID=u_id;
+END
+;;
+DELIMITER ;
